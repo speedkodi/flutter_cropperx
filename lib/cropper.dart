@@ -25,6 +25,12 @@ class Cropper extends StatefulWidget {
   /// The maximum scale the user is able to zoom. Defaults to 2.5
   final double zoomScale;
 
+  /// The aspect ratio to crop the image to. Defaults to a square (an aspect ratio of 1.0)
+  final double aspectRatio;
+
+  /// The number of clockwise quarter turns the image should be rotated. Defaults to 0.
+  final int rotationTurns;
+
   /// The thickness of the grid lines. Defaults to 2.0.
   final double gridLineThickness;
 
@@ -34,10 +40,12 @@ class Cropper extends StatefulWidget {
   const Cropper({
     Key? key,
     this.backgroundColor = const Color(0xFFCECECE),
-    this.overlayColor = Colors.black54,
+    this.overlayColor = Colors.black38,
     this.overlayType = OverlayType.none,
     this.zoomScale = 2.5,
     this.gridLineThickness = 2.0,
+    this.aspectRatio = 1,
+    this.rotationTurns = 0,
     required this.cropperKey,
     required this.image,
   }) : super(key: key);
@@ -66,7 +74,7 @@ class Cropper extends StatefulWidget {
 }
 
 class _CropperState extends State<Cropper> {
-  final TransformationController _transformationController = TransformationController();
+  late final TransformationController _transformationController;
 
   /// Boolean to indicate if the image has been updated after a state change. Used so we don't do
   /// any unnecessary refreshes.
@@ -93,6 +101,7 @@ class _CropperState extends State<Cropper> {
   void initState() {
     super.initState();
     _hasImageUpdated = true;
+    _transformationController = TransformationController();
   }
 
   @override
@@ -103,85 +112,103 @@ class _CropperState extends State<Cropper> {
 
   @override
   Widget build(BuildContext context) {
-    return ColoredBox(
-      color: widget.backgroundColor,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          RepaintBoundary(
-            key: widget.cropperKey,
-            child: LayoutBuilder(
-              builder: (_, constraint) {
-                return InteractiveViewer(
-                  transformationController: _transformationController,
-                  constrained: false,
-                  child: Builder(
-                    builder: (context) {
-                      final imageStream = widget.image.image.resolve(_imageConfiguration);
-                      if (_hasImageUpdated && _shouldSetInitialScale) {
-                        imageStream.removeListener(_imageStreamListener);
-                        WidgetsBinding.instance?.addPostFrameCallback((_) {
-                          final renderBox = context.findRenderObject() as RenderBox?;
-                          final childSize = renderBox?.size ?? Size.zero;
-                          if (childSize != Size.zero) {
-                            final parentSize = constraint.biggest;
-                            _transformationController.value =
-                                Matrix4.identity() * _getCoverRatio(parentSize, childSize);
-                          }
-                        });
-                      }
+    return ClipRect(
+      child: ColoredBox(
+        color: widget.backgroundColor,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            RepaintBoundary(
+              key: widget.cropperKey,
+              child: RotatedBox(
+                quarterTurns: widget.rotationTurns,
+                child: AspectRatio(
+                  aspectRatio: widget.aspectRatio,
+                  child: LayoutBuilder(
+                    builder: (_, constraint) {
+                      return InteractiveViewer(
+                        clipBehavior: Clip.none,
+                        transformationController: _transformationController,
+                        constrained: false,
+                        child: Builder(
+                          builder: (context) {
+                            final imageStream = widget.image.image.resolve(_imageConfiguration);
+                            if (_hasImageUpdated && _shouldSetInitialScale) {
+                              imageStream.removeListener(_imageStreamListener);
+                              WidgetsBinding.instance?.addPostFrameCallback((_) {
+                                final renderBox = context.findRenderObject() as RenderBox?;
+                                final childSize = renderBox?.size ?? Size.zero;
+                                if (childSize != Size.zero) {
+                                  final parentSize = constraint.biggest;
+                                  _transformationController.value =
+                                      Matrix4.identity() * _getCoverRatio(parentSize, childSize);
+                                }
+                              });
+                            }
 
-                      if (_hasImageUpdated && !_shouldSetInitialScale) {
-                        imageStream.addListener(_imageStreamListener);
-                      }
+                            if (_hasImageUpdated && !_shouldSetInitialScale) {
+                              imageStream.addListener(_imageStreamListener);
+                            }
 
-                      return widget.image;
+                            return widget.image;
+                          },
+                        ),
+                        minScale: 0.1,
+                        maxScale: widget.zoomScale,
+                      );
                     },
                   ),
-                  minScale: 0.1,
-                  maxScale: widget.zoomScale,
-                );
-              },
-            ),
-          ),
-          if (widget.overlayType == OverlayType.circle)
-            ClipPath(
-              clipper: _OverlayFrame(),
-              child: Container(
-                color: widget.overlayColor,
+                ),
               ),
             ),
-          if (widget.overlayType == OverlayType.grid ||
-              widget.overlayType == OverlayType.gridHorizontal)
-            Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Divider(
+            if (widget.overlayType == OverlayType.circle)
+              ClipPath(
+                clipper: _OverlayCircleFrame(),
+                child: Container(
                   color: widget.overlayColor,
-                  thickness: widget.gridLineThickness,
                 ),
-                Divider(
+              ),
+            if (widget.overlayType == OverlayType.rectangle)
+              ClipPath(
+                clipper: _OverlayRectangleFrame(
+                  aspectRatio: widget.aspectRatio,
+                ),
+                child: Container(
                   color: widget.overlayColor,
-                  thickness: widget.gridLineThickness,
                 ),
-              ],
-            ),
-          if (widget.overlayType == OverlayType.grid ||
-              widget.overlayType == OverlayType.gridVertical)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                VerticalDivider(
-                  color: widget.overlayColor,
-                  thickness: widget.gridLineThickness,
-                ),
-                VerticalDivider(
-                  color: widget.overlayColor,
-                  thickness: widget.gridLineThickness,
-                ),
-              ],
-            ),
-        ],
+              ),
+            if (widget.overlayType == OverlayType.grid ||
+                widget.overlayType == OverlayType.gridHorizontal)
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Divider(
+                    color: widget.overlayColor,
+                    thickness: widget.gridLineThickness,
+                  ),
+                  Divider(
+                    color: widget.overlayColor,
+                    thickness: widget.gridLineThickness,
+                  ),
+                ],
+              ),
+            if (widget.overlayType == OverlayType.grid ||
+                widget.overlayType == OverlayType.gridVertical)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  VerticalDivider(
+                    color: widget.overlayColor,
+                    thickness: widget.gridLineThickness,
+                  ),
+                  VerticalDivider(
+                    color: widget.overlayColor,
+                    thickness: widget.gridLineThickness,
+                  ),
+                ],
+              ),
+          ],
+        ),
       ),
     );
   }
@@ -199,9 +226,9 @@ class _CropperState extends State<Cropper> {
   }
 }
 
-enum OverlayType { circle, grid, gridHorizontal, gridVertical, none }
+enum OverlayType { circle, rectangle, grid, gridHorizontal, gridVertical, none }
 
-class _OverlayFrame extends CustomClipper<Path> {
+class _OverlayCircleFrame extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     return Path.combine(
@@ -220,4 +247,36 @@ class _OverlayFrame extends CustomClipper<Path> {
 
   @override
   bool shouldReclip(CustomClipper<Path> oldClipper) => true;
+}
+
+class _OverlayRectangleFrame extends CustomClipper<Path> {
+  final double aspectRatio;
+
+  _OverlayRectangleFrame({
+    required this.aspectRatio,
+  });
+
+  @override
+  Path getClip(Size size) {
+    double _height = aspectRatio >= 1 ? size.width / aspectRatio : size.height;
+    double _width = aspectRatio <= 1 ? size.height * aspectRatio : size.width;
+
+    return Path.combine(
+      PathOperation.difference,
+      Path()..addRect(Rect.fromLTWH(0, 0, size.width, size.height)),
+      Path()
+        ..addRect(
+          Rect.fromCenter(
+            center: Offset(size.width / 2, size.height / 2),
+            height: _height,
+            width: _width,
+          ),
+        )
+        ..close(),
+    );
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) =>
+      aspectRatio != (oldClipper as _OverlayRectangleFrame).aspectRatio;
 }

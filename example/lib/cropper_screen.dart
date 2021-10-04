@@ -16,6 +16,7 @@ class _CropperScreenState extends State<CropperScreen> {
   final GlobalKey _cropperKey = GlobalKey(debugLabel: 'cropperKey');
   File? _croppedFile;
   OverlayType _overlayType = OverlayType.circle;
+  int _rotationTurns = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -24,22 +25,20 @@ class _CropperScreenState extends State<CropperScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.all(36.0),
-                child: AspectRatio(
-                  aspectRatio: 1,
-                  child: Cropper(
-                    cropperKey: _cropperKey,
-                    overlayType: _overlayType,
-                    image: Image.network(
-                      'https://i.pinimg.com/originals/6b/4d/18/6b4d18c0b756ab20c3591490dfc10090.jpg',
-                    ),
+              SizedBox(
+                height: 500,
+                child: Cropper(
+                  cropperKey: _cropperKey,
+                  overlayType: _overlayType,
+                  rotationTurns: _rotationTurns,
+                  image: Image.network(
+                    'https://i.pinimg.com/originals/6b/4d/18/6b4d18c0b756ab20c3591490dfc10090.jpg',
                   ),
                 ),
               ),
               const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+              Wrap(
+                spacing: 16,
                 children: [
                   ElevatedButton(
                     child: const Text('Switch overlay'),
@@ -47,11 +46,12 @@ class _CropperScreenState extends State<CropperScreen> {
                       setState(() {
                         _overlayType = _overlayType == OverlayType.circle
                             ? OverlayType.grid
-                            : OverlayType.circle;
+                            : _overlayType == OverlayType.grid
+                                ? OverlayType.rectangle
+                                : OverlayType.circle;
                       });
                     },
                   ),
-                  const SizedBox(width: 16),
                   ElevatedButton(
                     child: const Text('Crop image'),
                     onPressed: () async {
@@ -68,6 +68,18 @@ class _CropperScreenState extends State<CropperScreen> {
                         _croppedFile = file;
                       });
                     },
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      setState(() => _rotationTurns--);
+                    },
+                    icon: const Icon(Icons.rotate_left),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      setState(() => _rotationTurns++);
+                    },
+                    icon: const Icon(Icons.rotate_right),
                   ),
                 ],
               ),
