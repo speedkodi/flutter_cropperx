@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_cropperx/cropper.dart';
+import 'package:cropperx/cropper.dart';
 import 'package:path_provider/path_provider.dart';
 
 class CropperScreen extends StatefulWidget {
@@ -57,7 +57,7 @@ class _CropperScreenState extends State<CropperScreen> {
                     onPressed: () async {
                       Directory tempDir = await getTemporaryDirectory();
                       final path = tempDir.path;
-                      final fileName = 'crop_${DateTime.now().millisecondsSinceEpoch}.png';
+                      final fileName = 'crop_${DateTime.now().millisecondsSinceEpoch}';
 
                       final file = await Cropper.crop(
                         cropperKey: _cropperKey,

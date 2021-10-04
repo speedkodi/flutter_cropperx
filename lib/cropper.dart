@@ -69,7 +69,7 @@ class Cropper extends StatefulWidget {
     final Uint8List pngBytes = byteData!.buffer.asUint8List();
 
     // Create and return file
-    return File('$path/$fileName').writeAsBytes(pngBytes);
+    return File('$path/$fileName.png').writeAsBytes(pngBytes);
   }
 }
 
