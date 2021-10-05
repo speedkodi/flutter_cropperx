@@ -61,11 +61,14 @@ class Cropper extends StatefulWidget {
     required String fileName,
   }) async {
     // Get cropped image
-    final boundary = cropperKey.currentContext!.findRenderObject()! as RenderRepaintBoundary;
+    final renderObject = cropperKey.currentContext!.findRenderObject();
+    final boundary = renderObject as RenderRepaintBoundary;
     final image = await boundary.toImage(pixelRatio: 3);
 
     // Convert image to bytes in PNG format
-    final ByteData? byteData = await image.toByteData(format: ImageByteFormat.png);
+    final ByteData? byteData = await image.toByteData(
+      format: ImageByteFormat.png,
+    );
     final Uint8List pngBytes = byteData!.buffer.asUint8List();
 
     // Create and return file
@@ -132,18 +135,12 @@ class _CropperState extends State<Cropper> {
                         constrained: false,
                         child: Builder(
                           builder: (context) {
-                            final imageStream = widget.image.image.resolve(_imageConfiguration);
+                            final imageStream = widget.image.image.resolve(
+                              _imageConfiguration,
+                            );
                             if (_hasImageUpdated && _shouldSetInitialScale) {
                               imageStream.removeListener(_imageStreamListener);
-                              WidgetsBinding.instance?.addPostFrameCallback((_) {
-                                final renderBox = context.findRenderObject() as RenderBox?;
-                                final childSize = renderBox?.size ?? Size.zero;
-                                if (childSize != Size.zero) {
-                                  final parentSize = constraint.biggest;
-                                  _transformationController.value =
-                                      Matrix4.identity() * _getCoverRatio(parentSize, childSize);
-                                }
-                              });
+                              _setInitialScale(context, constraint.biggest);
                             }
 
                             if (_hasImageUpdated && !_shouldSetInitialScale) {
@@ -217,6 +214,17 @@ class _CropperState extends State<Cropper> {
     return outside.width / outside.height > inside.width / inside.height
         ? outside.width / inside.width
         : outside.height / inside.height;
+  }
+
+  void _setInitialScale(BuildContext context, Size parentSize) {
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
+      final renderBox = context.findRenderObject() as RenderBox?;
+      final childSize = renderBox?.size ?? Size.zero;
+      if (childSize != Size.zero) {
+        _transformationController.value =
+            Matrix4.identity() * _getCoverRatio(parentSize, childSize);
+      }
+    });
   }
 
   @override
