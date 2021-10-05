@@ -1,22 +1,22 @@
 # CropperX
 
 A cropper package made fully in Flutter.
-
+<br/>
 ### Types of overlays
 
 The overlay can be defined by adding an overlay type through the `overlayType` parameter. The following types are currently supported:
 
-**OverlayType.none**: No overlay at all.
-**OverlayType.circle**: An overlay with a circular gap.
-**OverlayType.rectangle**: An overlay with a rectangular gap, takes the given aspect ratio.
-**OverlayType.grid**: An overlay of grid lines: 2 horizontal and 2 vertical, evenly spaced.
-**OverlayType.gridHorizontal**: An overlay of 2 horizontal grid lines, evenly spaced.
-**OverlayType.gridVertical**: An overlay of 2 vertical grid lines, evenly spaced.
-
+**OverlayType.none**: No overlay at all.<br/>
+**OverlayType.circle**: An overlay with a circular gap.<br/>
+**OverlayType.rectangle**: An overlay with a rectangular gap, takes the given aspect ratio.<br/>
+**OverlayType.grid**: An overlay of grid lines: 2 horizontal and 2 vertical, evenly spaced.<br/>
+**OverlayType.gridHorizontal**: An overlay of 2 horizontal grid lines, evenly spaced.<br/>
+**OverlayType.gridVertical**: An overlay of 2 vertical grid lines, evenly spaced.<br/>
+<br/>
 ### Rotating the image
 
 The image rotation can be defined through the `rotationTurns` parameter. The default value is `0`, corresponding to 0 degrees of rotation. Making the value larger by 1 will rotate the image 90 degrees clockwise, making it smaller will rotate the image 90 degrees counterclockwise. `0` to `4` is not a limit, so going above or below these values will keep rotating the image.
-
+<br/>
 ### Example
 
 ```dart
