@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui';
 
@@ -156,15 +157,9 @@ class _CropperState extends State<Cropper> {
             ),
             if (widget.overlayType == OverlayType.circle)
               ClipPath(
-                clipper: _OverlayCircleFrame(),
-                child: Container(
-                  color: widget.overlayColor,
-                ),
-              ),
-            if (widget.overlayType == OverlayType.rectangle)
-              ClipPath(
-                clipper: _OverlayRectangleFrame(
+                clipper: _OverlayFrame(
                   aspectRatio: widget.aspectRatio,
+                  isCircle: widget.overlayType == OverlayType.circle,
                 ),
                 child: Container(
                   color: widget.overlayColor,
@@ -232,32 +227,13 @@ class _CropperState extends State<Cropper> {
 
 enum OverlayType { circle, rectangle, grid, gridHorizontal, gridVertical, none }
 
-class _OverlayCircleFrame extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    return Path.combine(
-      PathOperation.difference,
-      Path()..addRect(Rect.fromLTWH(0, 0, size.width, size.height)),
-      Path()
-        ..addOval(
-          Rect.fromCircle(
-            center: Offset(size.width / 2, size.height / 2),
-            radius: size.width / 2,
-          ),
-        )
-        ..close(),
-    );
-  }
-
-  @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) => true;
-}
-
-class _OverlayRectangleFrame extends CustomClipper<Path> {
+class _OverlayFrame extends CustomClipper<Path> {
   final double aspectRatio;
+  final bool isCircle;
 
-  _OverlayRectangleFrame({
+  _OverlayFrame({
     required this.aspectRatio,
+    this.isCircle = false,
   });
 
   @override
@@ -265,22 +241,32 @@ class _OverlayRectangleFrame extends CustomClipper<Path> {
     double _height = aspectRatio >= 1 ? size.width / aspectRatio : size.height;
     double _width = aspectRatio <= 1 ? size.height * aspectRatio : size.width;
 
+    final opening = Path();
+    if (isCircle) {
+      opening.addOval(
+        Rect.fromCircle(
+          center: Offset(size.width / 2, size.height / 2),
+          radius: min(_height, _width) / 2,
+        ),
+      );
+    } else {
+      opening.addRect(
+        Rect.fromCenter(
+          center: Offset(size.width / 2, size.height / 2),
+          height: _height,
+          width: _width,
+        ),
+      );
+    }
+
     return Path.combine(
       PathOperation.difference,
       Path()..addRect(Rect.fromLTWH(0, 0, size.width, size.height)),
-      Path()
-        ..addRect(
-          Rect.fromCenter(
-            center: Offset(size.width / 2, size.height / 2),
-            height: _height,
-            width: _width,
-          ),
-        )
-        ..close(),
+      opening..close(),
     );
   }
 
   @override
   bool shouldReclip(CustomClipper<Path> oldClipper) =>
-      aspectRatio != (oldClipper as _OverlayRectangleFrame).aspectRatio;
+      aspectRatio != (oldClipper as _OverlayFrame).aspectRatio;
 }
