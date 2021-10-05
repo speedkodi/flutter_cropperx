@@ -51,9 +51,7 @@ class _CropperScreenState extends State<CropperScreen> {
                   cropperKey: _cropperKey,
                   overlayType: _overlayType,
                   rotationTurns: _rotationTurns,
-                  image: Image.network(
-                    'https://i.pinimg.com/originals/6b/4d/18/6b4d18c0b756ab20c3591490dfc10090.jpg',
-                  ),
+                  image: Image.asset('profile_picture.jpeg'),
                 ),
               ),
               const SizedBox(height: 16),
