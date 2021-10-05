@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:cropperx/cropper.dart';
+import 'package:cropperx/cropperx.dart';
 import 'package:path_provider/path_provider.dart';
 
 class CropperScreen extends StatefulWidget {
