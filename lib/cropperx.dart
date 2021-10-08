@@ -57,11 +57,12 @@ class Cropper extends StatefulWidget {
   /// as [Uint8List]. The cropper widget should be referenced using its key.
   static Future<Uint8List> crop({
     required GlobalKey cropperKey,
+    double pixelRatio = 3,
   }) async {
     // Get cropped image
     final renderObject = cropperKey.currentContext!.findRenderObject();
     final boundary = renderObject as RenderRepaintBoundary;
-    final image = await boundary.toImage(pixelRatio: 3);
+    final image = await boundary.toImage(pixelRatio: pixelRatio);
 
     // Convert image to bytes in PNG format and return
     final ByteData? byteData = await image.toByteData(
