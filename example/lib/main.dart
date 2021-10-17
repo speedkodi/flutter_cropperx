@@ -1,10 +1,9 @@
-import 'dart:html' as html;
-import 'dart:io' as io;
+import 'dart:typed_data';
 
 import 'package:cropperx/cropperx.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:image_picker/image_picker.dart';
 
 void main() {
   runApp(const MyApp());
@@ -33,8 +32,10 @@ class CropperScreen extends StatefulWidget {
 }
 
 class _CropperScreenState extends State<CropperScreen> {
+  final ImagePicker _picker = ImagePicker();
   final GlobalKey _cropperKey = GlobalKey(debugLabel: 'cropperKey');
-  var _croppedFile;
+  Uint8List? _imageToCrop;
+  Uint8List? _croppedImage;
   OverlayType _overlayType = OverlayType.circle;
   int _rotationTurns = 0;
 
@@ -47,17 +48,34 @@ class _CropperScreenState extends State<CropperScreen> {
             children: [
               SizedBox(
                 height: 500,
-                child: Cropper(
-                  cropperKey: _cropperKey,
-                  overlayType: _overlayType,
-                  rotationTurns: _rotationTurns,
-                  image: Image.asset('profile_picture.jpeg'),
-                ),
+                child: _imageToCrop != null
+                    ? Cropper(
+                        cropperKey: _cropperKey,
+                        overlayType: _overlayType,
+                        rotationTurns: _rotationTurns,
+                        image: Image.memory(_imageToCrop!),
+                      )
+                    : const ColoredBox(color: Colors.grey),
               ),
               const SizedBox(height: 16),
               Wrap(
                 spacing: 16,
                 children: [
+                  ElevatedButton(
+                    child: const Text('Pick image'),
+                    onPressed: () async {
+                      final image = await _picker.pickImage(
+                        source: ImageSource.gallery,
+                      );
+
+                      if (image != null) {
+                        final imageBytes = await image.readAsBytes();
+                        setState(() {
+                          _imageToCrop = imageBytes;
+                        });
+                      }
+                    },
+                  ),
                   ElevatedButton(
                     child: const Text('Switch overlay'),
                     onPressed: () {
@@ -77,19 +95,11 @@ class _CropperScreenState extends State<CropperScreen> {
                         cropperKey: _cropperKey,
                       );
 
-                      final tempDir = await getTemporaryDirectory();
-                      final path = tempDir.path;
-                      final fileName =
-                          'crop_${DateTime.now().millisecondsSinceEpoch}';
-
-                      final file = kIsWeb
-                          ? html.File(imageBytes, '$path/$fileName.png')
-                          : await io.File('$path/$fileName.png')
-                              .writeAsBytes(imageBytes);
-
-                      setState(() {
-                        _croppedFile = file;
-                      });
+                      if (imageBytes != null) {
+                        setState(() {
+                          _croppedImage = imageBytes;
+                        });
+                      }
                     },
                   ),
                   IconButton(
@@ -107,10 +117,10 @@ class _CropperScreenState extends State<CropperScreen> {
                 ],
               ),
               const SizedBox(height: 16),
-              if (_croppedFile != null)
+              if (_croppedImage != null)
                 Padding(
                   padding: const EdgeInsets.all(36.0),
-                  child: Image.file(_croppedFile!),
+                  child: Image.memory(_croppedImage!),
                 ),
             ],
           ),

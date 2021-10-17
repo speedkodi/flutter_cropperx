@@ -55,7 +55,7 @@ class Cropper extends StatefulWidget {
 
   /// Crops the image as displayed in the cropper widget, converts it to PNG format and returns it
   /// as [Uint8List]. The cropper widget should be referenced using its key.
-  static Future<Uint8List> crop({
+  static Future<Uint8List?> crop({
     required GlobalKey cropperKey,
     double pixelRatio = 3,
   }) async {
@@ -65,10 +65,10 @@ class Cropper extends StatefulWidget {
     final image = await boundary.toImage(pixelRatio: pixelRatio);
 
     // Convert image to bytes in PNG format and return
-    final ByteData? byteData = await image.toByteData(
+    final byteData = await image.toByteData(
       format: ImageByteFormat.png,
     );
-    final Uint8List pngBytes = byteData!.buffer.asUint8List();
+    final pngBytes = byteData?.buffer.asUint8List();
 
     return pngBytes;
   }
