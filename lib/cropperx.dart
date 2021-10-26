@@ -216,6 +216,8 @@ class _CropperState extends State<Cropper> {
         _transformationController.value =
             Matrix4.identity() * _getCoverRatio(parentSize, childSize);
       }
+
+      _shouldSetInitialScale = false;
     });
   }
 
