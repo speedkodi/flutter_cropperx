@@ -92,8 +92,10 @@ class _CropperState extends State<Cropper> {
   /// viewport by scaling the image down as much as possible.
   late final _imageStreamListener = ImageStreamListener(
     (_, __) {
-      setState(() {
-        _shouldSetInitialScale = true;
+      WidgetsBinding.instance?.addPostFrameCallback((_) {
+        setState(() {
+          _shouldSetInitialScale = true;
+        });
       });
     },
   );
