@@ -1,6 +1,6 @@
 name: cropperx
 description: An image cropper package made in Flutter. Can be used to crop & rotate images.
-version: 0.0.3
+version: 0.0.4
 homepage: https://github.com/speedkodi/flutter_cropperx
 
 environment:
