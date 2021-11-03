@@ -168,6 +168,15 @@ class _CropperState extends State<Cropper> {
                   color: widget.overlayColor,
                 ),
               ),
+            if (widget.overlayType == OverlayType.rectangle)
+              ClipPath(
+                clipper: _OverlayFrame(
+                  aspectRatio: widget.aspectRatio,
+                ),
+                child: Container(
+                  color: widget.overlayColor,
+                ),
+              ),
             if (widget.overlayType == OverlayType.grid ||
                 widget.overlayType == OverlayType.gridHorizontal)
               Column(
