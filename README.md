@@ -2,6 +2,10 @@
 
 A cropper package made fully in Flutter.
 
+  Circle                   |  Rectangle                |  Grid
+:-------------------------:|:-------------------------:|:-------------------------:
+![Screenshot circle](docs/screenshot_circle.png)|![Screenshot rectangle](docs/screenshot_rectangle.png)|![Screenshot grid](docs/screenshot_grid.png)
+
 ### Types of overlays
 
 The overlay can be defined by adding an overlay type through the `overlayType` parameter. The following types are currently supported:
