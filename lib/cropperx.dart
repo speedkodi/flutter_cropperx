@@ -158,7 +158,8 @@ class _CropperState extends State<Cropper> {
                 ),
               ),
             ),
-            if (widget.overlayType == OverlayType.circle)
+            if (widget.overlayType == OverlayType.circle ||
+                widget.overlayType == OverlayType.rectangle)
               ClipPath(
                 clipper: _OverlayFrame(
                   aspectRatio: widget.aspectRatio,
