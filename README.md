@@ -4,7 +4,7 @@ A cropper package made fully in Flutter.
 
   Circle                   |  Rectangle                |  Grid
 :-------------------------:|:-------------------------:|:-------------------------:
-![Screenshot circle](docs/screenshot_circle.png)|![Screenshot rectangle](docs/screenshot_rectangle.png)|![Screenshot grid](docs/screenshot_grid.png)
+![Screenshot circle](doc/screenshot_circle.png)|![Screenshot rectangle](doc/screenshot_rectangle.png)|![Screenshot grid](doc/screenshot_grid.png)
 
 ### Types of overlays
 
