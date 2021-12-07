@@ -1,3 +1,6 @@
+## 1.0.0 - 2021/12/07
+* Fix Rectangle overlay not showing
+
 ## 0.0.3 - 2021/10/08
 * Make pixelRatio configurable when calling `crop`
 
