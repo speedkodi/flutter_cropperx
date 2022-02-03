@@ -160,44 +160,50 @@ class _CropperState extends State<Cropper> {
             ),
             if (widget.overlayType == OverlayType.circle ||
                 widget.overlayType == OverlayType.rectangle)
-              ClipPath(
-                clipper: _OverlayFrame(
-                  aspectRatio: widget.aspectRatio,
-                  isCircle: widget.overlayType == OverlayType.circle,
-                ),
-                child: Container(
-                  color: widget.overlayColor,
+              Positioned.fill(
+                child: ClipPath(
+                  clipper: _OverlayFrame(
+                    aspectRatio: widget.aspectRatio,
+                    isCircle: widget.overlayType == OverlayType.circle,
+                  ),
+                  child: Container(
+                    color: widget.overlayColor,
+                  ),
                 ),
               ),
             if (widget.overlayType == OverlayType.grid ||
                 widget.overlayType == OverlayType.gridHorizontal)
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Divider(
-                    color: widget.overlayColor,
-                    thickness: widget.gridLineThickness,
-                  ),
-                  Divider(
-                    color: widget.overlayColor,
-                    thickness: widget.gridLineThickness,
-                  ),
-                ],
+              Positioned.fill(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Divider(
+                      color: widget.overlayColor,
+                      thickness: widget.gridLineThickness,
+                    ),
+                    Divider(
+                      color: widget.overlayColor,
+                      thickness: widget.gridLineThickness,
+                    ),
+                  ],
+                ),
               ),
             if (widget.overlayType == OverlayType.grid ||
                 widget.overlayType == OverlayType.gridVertical)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  VerticalDivider(
-                    color: widget.overlayColor,
-                    thickness: widget.gridLineThickness,
-                  ),
-                  VerticalDivider(
-                    color: widget.overlayColor,
-                    thickness: widget.gridLineThickness,
-                  ),
-                ],
+              Positioned.fill(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    VerticalDivider(
+                      color: widget.overlayColor,
+                      thickness: widget.gridLineThickness,
+                    ),
+                    VerticalDivider(
+                      color: widget.overlayColor,
+                      thickness: widget.gridLineThickness,
+                    ),
+                  ],
+                ),
               ),
           ],
         ),
