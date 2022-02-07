@@ -7,7 +7,7 @@ import 'package:flutter/rendering.dart';
 
 class Cropper extends StatefulWidget {
   /// The cropper's key to reference when calling the crop function.
-  final GlobalKey? cropperKey;
+  final GlobalKey cropperKey;
 
   /// The background color of the cropper widget, visible when the image won't
   /// fill the entire widget. Defaults to a light grey color: Color(0xFFCECECE).
@@ -38,7 +38,7 @@ class Cropper extends StatefulWidget {
   final Image image;
 
   const Cropper({
-    Key? key,
+    Key key,
     this.backgroundColor = const Color(0xFFCECECE),
     this.overlayColor = Colors.black38,
     this.overlayType = OverlayType.none,
@@ -46,8 +46,8 @@ class Cropper extends StatefulWidget {
     this.gridLineThickness = 2.0,
     this.aspectRatio = 1,
     this.rotationTurns = 0,
-    required this.cropperKey,
-    required this.image,
+    @required this.cropperKey,
+    @required this.image,
   }) : super(key: key);
 
   @override
@@ -55,31 +55,31 @@ class Cropper extends StatefulWidget {
 
   /// Crops the image as displayed in the cropper widget, converts it to PNG format and returns it
   /// as [Uint8List]. The cropper widget should be referenced using its key.
-  static Future<Uint8List?> crop({
-    required GlobalKey cropperKey,
+  static Future<Uint8List> crop({
+    @required GlobalKey cropperKey,
     double pixelRatio = 3,
   }) async {
     // Get cropped image
-    final renderObject = cropperKey.currentContext!.findRenderObject();
-    final boundary = renderObject as RenderRepaintBoundary;
-    final image = await boundary.toImage(pixelRatio: pixelRatio);
+    final renderObject = cropperKey.currentContext?.findRenderObject();
+    final boundary = renderObject != null ? renderObject as RenderRepaintBoundary : null;
+    final image = await boundary?.toImage(pixelRatio: pixelRatio);
 
     // Convert image to bytes in PNG format and return
-    final byteData = await image.toByteData(
+    final byteData = await image?.toByteData(
       format: ImageByteFormat.png,
     );
-    final pngBytes = byteData?.buffer.asUint8List();
+    final pngBytes = byteData?.buffer?.asUint8List();
 
     return pngBytes;
   }
 }
 
 class _CropperState extends State<Cropper> {
-  late final TransformationController _transformationController;
+  TransformationController _transformationController;
 
   /// Boolean to indicate if the image has been updated after a state change. Used so we don't do
   /// any unnecessary refreshes.
-  late bool _hasImageUpdated;
+  bool _hasImageUpdated;
 
   /// Boolean to indicate whether we need to set the initial scale of an image.
   bool _shouldSetInitialScale = false;
@@ -90,19 +90,20 @@ class _CropperState extends State<Cropper> {
   /// Image stream listener which is used to indicate whether the image has finished loading. This
   /// is required to do the initial scaling of the [InteractiveViewer], where we'd like to fill the
   /// viewport by scaling the image down as much as possible.
-  late final _imageStreamListener = ImageStreamListener(
-    (_, __) {
-      WidgetsBinding.instance?.addPostFrameCallback((_) {
-        setState(() {
-          _shouldSetInitialScale = true;
-        });
-      });
-    },
-  );
+  ImageStreamListener _imageStreamListener;
 
   @override
   void initState() {
     super.initState();
+    _imageStreamListener = ImageStreamListener(
+          (_, __) {
+        WidgetsBinding.instance?.addPostFrameCallback((_) {
+          setState(() {
+            _shouldSetInitialScale = true;
+          });
+        });
+      },
+    );
     _hasImageUpdated = true;
     _transformationController = TransformationController();
   }
@@ -213,7 +214,7 @@ class _CropperState extends State<Cropper> {
 
   void _setInitialScale(BuildContext context, Size parentSize) {
     WidgetsBinding.instance?.addPostFrameCallback((_) {
-      final renderBox = context.findRenderObject() as RenderBox?;
+      final renderBox = context.findRenderObject() as RenderBox;
       final childSize = renderBox?.size ?? Size.zero;
       if (childSize != Size.zero) {
         _transformationController.value =
@@ -238,7 +239,7 @@ class _OverlayFrame extends CustomClipper<Path> {
   final bool isCircle;
 
   _OverlayFrame({
-    required this.aspectRatio,
+    @required this.aspectRatio,
     this.isCircle = false,
   });
 
