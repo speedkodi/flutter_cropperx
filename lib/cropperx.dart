@@ -37,6 +37,15 @@ class Cropper extends StatefulWidget {
   /// The image to crop.
   final Image image;
 
+  /// The called when scale start.
+  final GestureScaleStartCallback? onScaleStart;
+
+  /// The called when scale update.
+  final GestureScaleUpdateCallback? onScaleUpdate;
+
+  /// The called when scale end.
+  final GestureScaleEndCallback? onScaleEnd;
+
   const Cropper({
     Key? key,
     this.backgroundColor = const Color(0xFFCECECE),
@@ -46,6 +55,9 @@ class Cropper extends StatefulWidget {
     this.gridLineThickness = 2.0,
     this.aspectRatio = 1,
     this.rotationTurns = 0,
+    this.onScaleStart,
+    this.onScaleUpdate,
+    this.onScaleEnd,
     required this.cropperKey,
     required this.image,
   }) : super(key: key);
@@ -152,6 +164,9 @@ class _CropperState extends State<Cropper> {
                         ),
                         minScale: 0.1,
                         maxScale: widget.zoomScale,
+                        onInteractionStart: widget.onScaleStart,
+                        onInteractionUpdate: widget.onScaleUpdate,
+                        onInteractionEnd: widget.onScaleEnd,
                       );
                     },
                   ),

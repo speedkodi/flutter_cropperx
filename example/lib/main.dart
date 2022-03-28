@@ -54,6 +54,15 @@ class _CropperScreenState extends State<CropperScreen> {
                         overlayType: _overlayType,
                         rotationTurns: _rotationTurns,
                         image: Image.memory(_imageToCrop!),
+                        onScaleStart: (details) {
+                          // todo: define started action.
+                        },
+                        onScaleUpdate: (details) {
+                          // todo: define updated action.
+                        },
+                        onScaleEnd: (details) {
+                          // todo: define ended action.
+                        },
                       )
                     : const ColoredBox(color: Colors.grey),
               ),
