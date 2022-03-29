@@ -211,13 +211,38 @@ class _CropperState extends State<Cropper> {
         : outside.height / inside.height;
   }
 
+  double _getTranslationX(Size outside, Size inside, coverRatio) {
+    if (coverRatio < 1) {
+      return (outside.width / coverRatio - inside.width) / 2;
+    } else {
+      return (outside.width - inside.width / coverRatio) / 2;
+    }
+  }
+
+  double _getTranslationY(Size outside, Size inside, coverRatio) {
+    if (coverRatio < 1) {
+      return (outside.height / coverRatio - inside.height) / 2;
+    } else {
+      return (outside.height - inside.height / coverRatio) / 2;
+    }
+  }
+
   void _setInitialScale(BuildContext context, Size parentSize) {
     WidgetsBinding.instance?.addPostFrameCallback((_) {
       final renderBox = context.findRenderObject() as RenderBox?;
       final childSize = renderBox?.size ?? Size.zero;
       if (childSize != Size.zero) {
-        _transformationController.value =
-            Matrix4.identity() * _getCoverRatio(parentSize, childSize);
+        final coverRatio = _getCoverRatio(parentSize, childSize);
+        Matrix4 value = Matrix4.identity() * coverRatio;
+
+        // Center the image inside the InteractiveViewer
+        value.translate(
+            _getTranslationX(parentSize, childSize, coverRatio),
+            _getTranslationY(parentSize, childSize, coverRatio),
+            0.0
+        );
+
+        _transformationController.value = value;
       }
 
       _shouldSetInitialScale = false;
