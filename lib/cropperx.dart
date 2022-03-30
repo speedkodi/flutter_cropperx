@@ -212,19 +212,11 @@ class _CropperState extends State<Cropper> {
   }
 
   double _getTranslationX(Size outside, Size inside, coverRatio) {
-    if (coverRatio < 1) {
-      return (outside.width / coverRatio - inside.width) / 2;
-    } else {
-      return (outside.width - inside.width / coverRatio) / 2;
-    }
+    return (outside.width / coverRatio - inside.width) / 2;
   }
 
   double _getTranslationY(Size outside, Size inside, coverRatio) {
-    if (coverRatio < 1) {
-      return (outside.height / coverRatio - inside.height) / 2;
-    } else {
-      return (outside.height - inside.height / coverRatio) / 2;
-    }
+    return (outside.height / coverRatio - inside.height) / 2;
   }
 
   void _setInitialScale(BuildContext context, Size parentSize) {
