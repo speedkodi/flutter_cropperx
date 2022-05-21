@@ -104,7 +104,7 @@ class _CropperState extends State<Cropper> {
   /// viewport by scaling the image down as much as possible.
   late final _imageStreamListener = ImageStreamListener(
     (_, __) {
-      WidgetsBinding.instance?.addPostFrameCallback((_) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
         setState(() {
           _shouldSetInitialScale = true;
         });
@@ -241,12 +241,12 @@ class _CropperState extends State<Cropper> {
   }
 
   void _setInitialScale(BuildContext context, Size parentSize) {
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       final renderBox = context.findRenderObject() as RenderBox?;
       final childSize = renderBox?.size ?? Size.zero;
       if (childSize != Size.zero) {
         final coverRatio = _getCoverRatio(parentSize, childSize);
-        Matrix4 value = Matrix4.identity() * coverRatio;
+        final value = Matrix4.identity() * coverRatio;
 
         // Center the image inside the InteractiveViewer
         value.translate(
