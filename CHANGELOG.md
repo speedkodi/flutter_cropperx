@@ -1,3 +1,8 @@
+## 1.1.0 - 2022/05/21
+* Add Flutter 3 support
+* Fix overlay not filling viewport
+* Center image on initial image load
+
 ## 1.0.0 - 2021/12/07
 * Fix Rectangle overlay not showing
 
