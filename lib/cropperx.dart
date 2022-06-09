@@ -93,7 +93,7 @@ class Cropper extends StatefulWidget {
   static void reset({required GlobalKey cropperKey}) {
     final state =
         cropperKey.currentContext!.findAncestorStateOfType() as _CropperState;
-    state.setImageToInitial();
+    state.setImageToInitialState();
   }
 }
 
@@ -122,12 +122,6 @@ class _CropperState extends State<Cropper> {
       });
     },
   );
-
-  void setImageToInitial() {
-    setState(() {
-      widget.image = widget.initialImage;
-    });
-  }
 
   @override
   void initState() {
@@ -241,6 +235,12 @@ class _CropperState extends State<Cropper> {
         ),
       ),
     );
+  }
+
+  void setImageToInitialState() {
+    setState(() {
+      widget.image = widget.initialImage;
+    });
   }
 
   double _getCoverRatio(Size outside, Size inside) {
