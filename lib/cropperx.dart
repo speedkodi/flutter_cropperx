@@ -35,7 +35,10 @@ class Cropper extends StatefulWidget {
   final double gridLineThickness;
 
   /// The image to crop.
-  final Image image;
+  Image image;
+
+  /// Backup initial image to reset method
+  final Image initialImage;
 
   /// The called when scale start.
   final GestureScaleStartCallback? onScaleStart;
@@ -46,7 +49,7 @@ class Cropper extends StatefulWidget {
   /// The called when scale end.
   final GestureScaleEndCallback? onScaleEnd;
 
-  const Cropper({
+  Cropper({
     Key? key,
     this.backgroundColor = const Color(0xFFCECECE),
     this.overlayColor = Colors.black38,
@@ -60,7 +63,8 @@ class Cropper extends StatefulWidget {
     this.onScaleEnd,
     required this.cropperKey,
     required this.image,
-  }) : super(key: key);
+  })  : initialImage = image,
+        super(key: key);
 
   @override
   State<Cropper> createState() => _CropperState();
@@ -83,6 +87,13 @@ class Cropper extends StatefulWidget {
     final pngBytes = byteData?.buffer.asUint8List();
 
     return pngBytes;
+  }
+
+  /// Reset the image to initial state
+  static void reset({required GlobalKey cropperKey}) {
+    final state =
+        cropperKey.currentContext!.findAncestorStateOfType() as _CropperState;
+    state.setImageToInitial();
   }
 }
 
@@ -111,6 +122,12 @@ class _CropperState extends State<Cropper> {
       });
     },
   );
+
+  void setImageToInitial() {
+    setState(() {
+      widget.image = widget.initialImage;
+    });
+  }
 
   @override
   void initState() {
@@ -249,11 +266,8 @@ class _CropperState extends State<Cropper> {
         final value = Matrix4.identity() * coverRatio;
 
         // Center the image inside the InteractiveViewer
-        value.translate(
-            _getTranslationX(parentSize, childSize, coverRatio),
-            _getTranslationY(parentSize, childSize, coverRatio),
-            0.0
-        );
+        value.translate(_getTranslationX(parentSize, childSize, coverRatio),
+            _getTranslationY(parentSize, childSize, coverRatio), 0.0);
 
         _transformationController.value = value;
       }
