@@ -111,6 +111,14 @@ class _CropperScreenState extends State<CropperScreen> {
                       }
                     },
                   ),
+                  ElevatedButton(
+                    child: const Text('Reset to initial image'),
+                    onPressed: () async {
+                      final imageBytes = Cropper.reset(
+                        cropperKey: _cropperKey,
+                      );
+                    },
+                  ),
                   IconButton(
                     onPressed: () {
                       setState(() => _rotationTurns--);
