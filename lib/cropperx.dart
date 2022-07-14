@@ -95,6 +95,7 @@ class _CropperState extends State<Cropper> {
 
   /// Boolean to indicate whether we need to set the initial scale of an image.
   bool _shouldSetInitialScale = false;
+  bool _shouldUpdateScale = false;
 
   /// The image configuration used to add the image stream listener to the image.
   final _imageConfiguration = const ImageConfiguration();
@@ -123,6 +124,7 @@ class _CropperState extends State<Cropper> {
   void didUpdateWidget(covariant Cropper oldWidget) {
     super.didUpdateWidget(oldWidget);
     _hasImageUpdated = oldWidget.image.image != widget.image.image;
+    _shouldUpdateScale = oldWidget.rotationTurns != widget.rotationTurns;
   }
 
   @override
@@ -135,41 +137,46 @@ class _CropperState extends State<Cropper> {
           children: [
             RepaintBoundary(
               key: widget.cropperKey,
-              child: RotatedBox(
-                quarterTurns: widget.rotationTurns,
-                child: AspectRatio(
-                  aspectRatio: widget.aspectRatio,
-                  child: LayoutBuilder(
-                    builder: (_, constraint) {
-                      return InteractiveViewer(
-                        clipBehavior: Clip.none,
-                        transformationController: _transformationController,
-                        constrained: false,
-                        child: Builder(
-                          builder: (context) {
-                            final imageStream = widget.image.image.resolve(
-                              _imageConfiguration,
-                            );
-                            if (_hasImageUpdated && _shouldSetInitialScale) {
-                              imageStream.removeListener(_imageStreamListener);
-                              _setInitialScale(context, constraint.biggest);
-                            }
+              child: AspectRatio(
+                aspectRatio: widget.aspectRatio,
+                child: LayoutBuilder(
+                  builder: (_, constraint) {
+                    return InteractiveViewer(
+                      clipBehavior: Clip.none,
+                      transformationController: _transformationController,
+                      constrained: false,
+                      child: Builder(
+                        builder: (context) {
+                          final imageStream = widget.image.image.resolve(
+                            _imageConfiguration,
+                          );
+                          if (_hasImageUpdated && _shouldSetInitialScale) {
+                            imageStream.removeListener(_imageStreamListener);
+                            _setInitialScale(context, constraint.biggest);
+                          }
 
-                            if (_hasImageUpdated && !_shouldSetInitialScale) {
-                              imageStream.addListener(_imageStreamListener);
-                            }
+                          if (_hasImageUpdated && !_shouldSetInitialScale) {
+                            imageStream.addListener(_imageStreamListener);
+                          }
 
-                            return widget.image;
-                          },
-                        ),
-                        minScale: 0.1,
-                        maxScale: widget.zoomScale,
-                        onInteractionStart: widget.onScaleStart,
-                        onInteractionUpdate: widget.onScaleUpdate,
-                        onInteractionEnd: widget.onScaleEnd,
-                      );
-                    },
-                  ),
+                          if (_shouldUpdateScale) {
+                            _setInitialScale(context, constraint.biggest);
+                            _shouldUpdateScale = false;
+                          }
+
+                          return RotatedBox(
+                            quarterTurns: widget.rotationTurns,
+                            child: widget.image,
+                          );
+                        },
+                      ),
+                      minScale: 0.1,
+                      maxScale: widget.zoomScale,
+                      onInteractionStart: widget.onScaleStart,
+                      onInteractionUpdate: widget.onScaleUpdate,
+                      onInteractionEnd: widget.onScaleEnd,
+                    );
+                  },
                 ),
               ),
             ),
