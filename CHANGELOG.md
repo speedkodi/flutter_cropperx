@@ -1,3 +1,7 @@
+## 1.1.1 - 2022/07/14
+* Fix weird gesture handling when image was rotated
+* Fix image placement after rotation
+
 ## 1.1.0 - 2022/05/21
 * Add Flutter 3 support
 * Fix overlay not filling viewport

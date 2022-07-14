@@ -257,9 +257,9 @@ class _CropperState extends State<Cropper> {
 
         // Center the image inside the InteractiveViewer
         value.translate(
-            _getTranslationX(parentSize, childSize, coverRatio),
-            _getTranslationY(parentSize, childSize, coverRatio),
-            0.0
+          _getTranslationX(parentSize, childSize, coverRatio),
+          _getTranslationY(parentSize, childSize, coverRatio),
+          0.0,
         );
 
         _transformationController.value = value;
