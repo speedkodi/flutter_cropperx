@@ -25,7 +25,7 @@ class Cropper extends StatefulWidget {
   /// The maximum scale the user is able to zoom. Defaults to 2.5
   final double zoomScale;
 
-  /// The maximum scale the user is able to zoom. Defaults to 0.1
+  /// The minimum scale the user is able to zoom. Defaults to 0.1
   final double minZoomScale;
   
   /// The aspect ratio to crop the image to. Defaults to a square (an aspect ratio of 1.0)
