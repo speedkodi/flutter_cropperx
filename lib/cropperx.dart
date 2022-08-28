@@ -25,6 +25,9 @@ class Cropper extends StatefulWidget {
   /// The maximum scale the user is able to zoom. Defaults to 2.5
   final double zoomScale;
 
+  /// The minimum scale the user is able to zoom. Defaults to 0.1
+  final double minZoomScale;
+  
   /// The aspect ratio to crop the image to. Defaults to a square (an aspect ratio of 1.0)
   final double aspectRatio;
 
@@ -52,6 +55,7 @@ class Cropper extends StatefulWidget {
     this.overlayColor = Colors.black38,
     this.overlayType = OverlayType.none,
     this.zoomScale = 2.5,
+    this.minZoomScale = 0.1,
     this.gridLineThickness = 2.0,
     this.aspectRatio = 1,
     this.rotationTurns = 0,
@@ -170,7 +174,7 @@ class _CropperState extends State<Cropper> {
                           );
                         },
                       ),
-                      minScale: 0.1,
+                      minScale: widget.minZoomScale,
                       maxScale: widget.zoomScale,
                       onInteractionStart: widget.onScaleStart,
                       onInteractionUpdate: widget.onScaleUpdate,
